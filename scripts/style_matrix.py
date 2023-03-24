@@ -156,7 +156,7 @@ def image_grid(imgs, batch_size=1, rows=None):
         for i in range(spawn_x_count):
             weight = get_image_weight(spawn_x_count, 1, i, cur_blend_style)
             if(current_models[0] != "None"):
-                fillColor = "#FF0000"
+                fillColor = "#FFAA00"
                 model_path = lora_models.get(current_models[0], None)
                 model_name = os.path.splitext(os.path.split(model_path)[-1])[0]
                 content = "{:.2f}".format(weight[0])
@@ -172,7 +172,7 @@ def image_grid(imgs, batch_size=1, rows=None):
         for i in range(spawn_y_count):
             weight = get_image_weight(1, spawn_y_count, spawn_y_count - i - 1, cur_blend_style)
             if(current_models[2] != "None"):
-                fillColor = "#FFAA00"
+                fillColor = "#FF0000"
                 model_path = lora_models.get(current_models[2], None)
                 model_name = os.path.splitext(os.path.split(model_path)[-1])[0]
                 content = "{:.2f}".format(weight[2])
@@ -260,7 +260,7 @@ def image_grid(imgs, batch_size=1, rows=None):
         start = (totalWidth - 95 - len(content)*15, totalHeight - 135)
         draw.text(custom_add(start,(0,10)),content,font=font,align="center",fill=fillColor)
 
-        fillColor = "#FFAA00"
+        fillColor = "#FF0000"
         content = "(风格3) Y0 " 
         if(current_models[2] != "None"):
             model_path = lora_models.get(current_models[2], None)
