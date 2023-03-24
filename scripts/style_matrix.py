@@ -18,7 +18,7 @@ import shutil
 # 1girl, tifalockhart, shuimobysim, beautiful girl
 
 style_matrix_enabled = False
-cur_model_scheme = "scheme 1"
+cur_blend_style = "style 1"
 spawn_x_count = 1
 spawn_y_count = 1
 current_index = 0
@@ -43,16 +43,16 @@ def getwatermarkimage(watermark,digit):
     return final_image
 
 
-def get_image_weight(col, row, index, scheme):
+def get_image_weight(col, row, index, style):
 
-    if(scheme == "scheme 1"):
+    if(style == "style 1"):
         deltaX = 1.0/max(col-1,1)
         deltaY = 1.0/max(row-1,1)
         index_x = index % col
         index_y = int(index // col)
         return [1, index_x*deltaX, 1, index_y*deltaY]
     
-    if(scheme == "scheme 2"):
+    if(style == "style 2"):
         deltaX = 1.0/max(col-1,1)
         deltaY = 1.0/max(row-1,1)
         index_x = index % col
@@ -70,7 +70,7 @@ def custom_add(a, b):
     return type(a)(c)
 
 def image_grid(imgs, batch_size=1, rows=None):
-    global spawn_x_count,spawn_y_count,current_index,current_models,cur_model_scheme
+    global spawn_x_count,spawn_y_count,current_index,current_models,cur_blend_style
 
     if (len(imgs) == 1):
         cols = 1
@@ -87,8 +87,11 @@ def image_grid(imgs, batch_size=1, rows=None):
         i = 0
         for img in imgs:
             temp = getwatermarkimage(watermark,i)
-            x = int((img.size[0] - temp.size[0])/2)
-            y = int((img.size[1] - temp.size[1])/2)
+            # x = int((img.size[0] - temp.size[0])/2)
+            # y = int((img.size[1] - temp.size[1])/2)
+            temp = temp.resize((temp.size[0]//5,temp.size[1]//5))
+            x = int(temp.size[0]/4)
+            y = int(img.size[1] - (temp.size[1]/4*5))
             img.paste(temp,(x,y),temp)
             i+=1
 
@@ -116,11 +119,11 @@ def image_grid(imgs, batch_size=1, rows=None):
     fillColor = "#00FFFF"
     font = ImageFont.truetype("C:\\Windows\\Fonts\\msyhbd.ttc", 30)
 
-    if(cur_model_scheme == "scheme 1"):
+    if(cur_blend_style == "style 1"):
         for i in range(spawn_x_count):
-            weight = get_image_weight(spawn_x_count, 1, i, cur_model_scheme)
+            weight = get_image_weight(spawn_x_count, 1, i, cur_blend_style)
             if(current_models[4] != "None"):
-                fillColor = "#0000FF"
+                fillColor = "#FFAA00"
                 model_path = lora_models.get(current_models[4], None)
                 model_name = os.path.splitext(os.path.split(model_path)[-1])[0]
                 content = "{:.2f}".format(weight[0])
@@ -134,9 +137,9 @@ def image_grid(imgs, batch_size=1, rows=None):
                 draw.text((w*i + (w/2) + 100 - len(content)*10/2, totalHeight - 55),content,font=font,align="center",fill=fillColor)
 
         for i in range(spawn_y_count):
-            weight = get_image_weight(1, spawn_y_count, spawn_y_count - i - 1, cur_model_scheme)
+            weight = get_image_weight(1, spawn_y_count, spawn_y_count - i - 1, cur_blend_style)
             if(current_models[4] != "None"):
-                fillColor = "#0000FF"
+                fillColor = "#FFAA00"
                 model_path = lora_models.get(current_models[4], None)
                 model_name = os.path.splitext(os.path.split(model_path)[-1])[0]
                 content = "{:.2f}".format(weight[2])
@@ -149,9 +152,9 @@ def image_grid(imgs, batch_size=1, rows=None):
                 content = "{:.2f}".format(weight[3])
                 draw.text((45, h*i + (h/2) + 135 - len(content)*10/2),content,font=font,align="center",fill=fillColor)
 
-    elif(cur_model_scheme == "scheme 2"):
+    elif(cur_blend_style == "style 2"):
         for i in range(spawn_x_count):
-            weight = get_image_weight(spawn_x_count, 1, i, cur_model_scheme)
+            weight = get_image_weight(spawn_x_count, 1, i, cur_blend_style)
             if(current_models[0] != "None"):
                 fillColor = "#FF0000"
                 model_path = lora_models.get(current_models[0], None)
@@ -167,9 +170,9 @@ def image_grid(imgs, batch_size=1, rows=None):
                 draw.text((w*i + (w/2) + 100 - len(content)*10/2, totalHeight - 55),content,font=font,align="center",fill=fillColor)
 
         for i in range(spawn_y_count):
-            weight = get_image_weight(1, spawn_y_count, spawn_y_count - i - 1, cur_model_scheme)
+            weight = get_image_weight(1, spawn_y_count, spawn_y_count - i - 1, cur_blend_style)
             if(current_models[2] != "None"):
-                fillColor = "#0000FF"
+                fillColor = "#FFAA00"
                 model_path = lora_models.get(current_models[2], None)
                 model_name = os.path.splitext(os.path.split(model_path)[-1])[0]
                 content = "{:.2f}".format(weight[2])
@@ -209,10 +212,10 @@ def image_grid(imgs, batch_size=1, rows=None):
 
     font = ImageFont.truetype("C:\\Windows\\Fonts\\msyhbd.ttc", 30)
 
-    if(cur_model_scheme == "scheme 1"):
+    if(cur_blend_style == "style 1"):
 
-        fillColor = "#0000FF"
-        content = "X0,Y0 "
+        fillColor = "#FFAA00"
+        content = "(风格1) X0,Y0 "
         if(current_models[4] != "None"):
             model_path = lora_models.get(current_models[4], None)
             model_name = os.path.splitext(os.path.split(model_path)[-1])[0]
@@ -221,7 +224,7 @@ def image_grid(imgs, batch_size=1, rows=None):
         draw.text(start,content,font=font,align="center",fill=fillColor)
 
         fillColor = "#FFFF00"
-        content = "X1 "
+        content = "(风格2)X1 "
         if(current_models[5] != "None"):
             model_path = lora_models.get(current_models[5], None)
             model_name = os.path.splitext(os.path.split(model_path)[-1])[0]
@@ -230,7 +233,7 @@ def image_grid(imgs, batch_size=1, rows=None):
         draw.text(custom_add(start,(0,10)),content,font=font,align="center",fill=fillColor)
 
         fillColor = "#00FF00"
-        content = "Y1 "
+        content = "(风格3) Y1 "
         if(current_models[6] != "None"):
             model_path = lora_models.get(current_models[6], None)
             model_name = os.path.splitext(os.path.split(model_path)[-1])[0]
@@ -238,9 +241,9 @@ def image_grid(imgs, batch_size=1, rows=None):
         start = (50 , 100)
         draw.text(start,content,font=font,align="center",fill=fillColor)
     
-    elif(cur_model_scheme == "scheme 2"):
-        fillColor = "#FF0000"
-        content = "X0 "
+    elif(cur_blend_style == "style 2"):
+        fillColor = "#FFAA00"
+        content = "(风格1) X0 "
         if(current_models[0] != "None"):
             model_path = lora_models.get(current_models[0], None)
             model_name = os.path.splitext(os.path.split(model_path)[-1])[0]
@@ -249,7 +252,7 @@ def image_grid(imgs, batch_size=1, rows=None):
         draw.text(custom_add(start,(0,10)),content,font=font,align="center",fill=fillColor)
         
         fillColor = "#FFFF00"
-        content = "X1 "
+        content = "(风格2) X1 "
         if(current_models[1] != "None"):
             model_path = lora_models.get(current_models[1], None)
             model_name = os.path.splitext(os.path.split(model_path)[-1])[0]
@@ -257,8 +260,8 @@ def image_grid(imgs, batch_size=1, rows=None):
         start = (totalWidth - 95 - len(content)*15, totalHeight - 135)
         draw.text(custom_add(start,(0,10)),content,font=font,align="center",fill=fillColor)
 
-        fillColor = "#0000FF"
-        content = "Y0 " 
+        fillColor = "#FFAA00"
+        content = "(风格3) Y0 " 
         if(current_models[2] != "None"):
             model_path = lora_models.get(current_models[2], None)
             model_name = os.path.splitext(os.path.split(model_path)[-1])[0]
@@ -267,7 +270,7 @@ def image_grid(imgs, batch_size=1, rows=None):
         draw.text(start,content,font=font,align="center",fill=fillColor)
 
         fillColor = "#00FF00"
-        content = "Y1 "
+        content = "(风格4) Y1 "
         if(current_models[3] != "None"):
             model_path = lora_models.get(current_models[3], None)
             model_name = os.path.splitext(os.path.split(model_path)[-1])[0]
@@ -342,32 +345,32 @@ class Script(scripts.Script):
             with gr.Column():
 
                 with gr.Row():
-                    enabled = gr.Checkbox(label='Enable', value=False)
-                x_count = gr.Slider(minimum=1, maximum=8, step=1, label="x_count", value=4)
-                y_count = gr.Slider(minimum=1, maximum=8, step=1, label="y_count", value=4)
+                    enabled = gr.Checkbox(label='启用', value=False)
+                x_count = gr.Slider(minimum=1, maximum=8, step=1, label="x轴生成数量", value=4)
+                y_count = gr.Slider(minimum=1, maximum=8, step=1, label="y轴生成数量", value=4)
                 #batch_size = gr.Slider(minimum=1, maximum=8, step=1, label='Batch size', value=1, elem_id="stylematrix_batch_size")
                 
                 with gr.Row():
-                    blend_scheme = gr.Dropdown(label="blend scheme", choices=["scheme 1","scheme 2"], value="scheme 1")
+                    blend_style = gr.Dropdown(label="UI风格", choices=["style 1","style 2"], value="style 1")
                 
-                with gr.Column(visible=True) as blend_scheme_1:
+                with gr.Column(visible=True) as blend_style_1:
                     with gr.Row():
-                        style05 = gr.Dropdown(label="X0,Y0", choices=models, value="None")
+                        style05 = gr.Dropdown(label="X0,Y0 (风格1)", choices=models, value="None")
                     with gr.Row():
-                        style06 = gr.Dropdown(label="X1", choices=models, value="None")
-                        style07 = gr.Dropdown(label="Y1", choices=models, value="None")
+                        style06 = gr.Dropdown(label="X1 (风格2)", choices=models, value="None")
+                        style07 = gr.Dropdown(label="Y1 (风格3)", choices=models, value="None")
 
-                with gr.Column(visible=False) as blend_scheme_2:
+                with gr.Column(visible=False) as blend_style_2:
                     with gr.Row():
-                        style01 = gr.Dropdown(label="X0", choices=models, value="None")
+                        style01 = gr.Dropdown(label="X0 (风格1)", choices=models, value="None")
                         #style01.change(lambda module, model : model_util.lora_models.get(model, "None"), inputs=[style01], outputs=[])
-                        style02 = gr.Dropdown(label="X1", choices=models, value="None")
+                        style02 = gr.Dropdown(label="X1 (风格2)", choices=models, value="None")
                     with gr.Row():
-                        style03 = gr.Dropdown(label="Y0", choices=models, value="None")
-                        style04 = gr.Dropdown(label="Y1", choices=models, value="None")
+                        style03 = gr.Dropdown(label="Y0 (风格3)", choices=models, value="None")
+                        style04 = gr.Dropdown(label="Y1 (风格4)", choices=models, value="None")
 
                 with gr.Row():
-                    refresh_models = gr.Button(value='Refresh models')
+                    refresh_models = gr.Button(value='刷新')
 
         # def changeProcessing(enable):
         #     print("change")
@@ -383,12 +386,12 @@ class Script(scripts.Script):
         def gr_show(visible=True):
             return {"visible": visible, "__type__": "update"}
 
-        def update_model_scheme(scheme):
-            global cur_model_scheme
-            cur_model_scheme = scheme
-            return (gr_show(scheme=="scheme 1"),gr_show(scheme=="scheme 2"))
+        def update_blend_style(style):
+            global cur_blend_style
+            cur_blend_style = style
+            return (gr_show(style=="style 1"),gr_show(style=="style 2"))
 
-        blend_scheme.change(fn=update_model_scheme, inputs=[blend_scheme], outputs=[blend_scheme_1,blend_scheme_2])
+        blend_style.change(fn=update_blend_style, inputs=[blend_style], outputs=[blend_style_1,blend_style_2])
         
         # x_count.change(fn=changeProcessing, inputs = [enabled],outputs = [])
         # y_count.change(fn=changeProcessing, inputs = [enabled],outputs = [])
@@ -513,7 +516,7 @@ class Script(scripts.Script):
         if args[7] == False:
             return
 
-        global spawn_x_count,spawn_y_count,current_index,cur_model_scheme
+        global spawn_x_count,spawn_y_count,current_index,cur_blend_style
         print("---------------- PostprocessImageArgs 单张图片生成完毕\n")
         #print(args)
         #print(pp.image)
@@ -527,8 +530,9 @@ class Script(scripts.Script):
         
         watermark = Image.open(os.path.join(os.path.dirname(os.path.realpath(__file__)),"digits.png"))
         watermark = getwatermarkimage(watermark,current_index)
-        x = int((processed_image.size[0] - watermark.size[0])/2)
-        y = int((processed_image.size[1] - watermark.size[1])/2)
+        watermark = watermark.resize((watermark.size[0]//5,watermark.size[1]//5))
+        x = int(watermark.size[0]/4)
+        y = int(processed_image.size[1] - (watermark.size[1]/4*5))
         processed_image.paste(watermark,(x,y),watermark)
 
         self.custom_processed_images.append(processed_image)
@@ -536,7 +540,7 @@ class Script(scripts.Script):
 
         current_index += 1
         current_index = min(spawn_x_count*spawn_y_count, current_index)
-        self.model_weight = get_image_weight(args[8], args[9], current_index, cur_model_scheme)
+        self.model_weight = get_image_weight(args[8], args[9], current_index, cur_blend_style)
         #print("-----------------------------------------------------------------------------------------------------------------------\n")
         #print(self.model_weight)
         #print("-----------------------------------------------------------------------------------------------------------------------\n")
@@ -565,10 +569,10 @@ class Script(scripts.Script):
 
         for i in range(4):
 
-            if(cur_model_scheme == "scheme 1" and i > 3):
+            if(cur_blend_style == "style 1" and i > 3):
                 break
             
-            model = args[i+3] if cur_model_scheme == "scheme 1" else args[i]
+            model = args[i+3] if cur_blend_style == "style 1" else args[i]
             if(model == "None" or self.model_weight[i] == 0):
                 continue
 
